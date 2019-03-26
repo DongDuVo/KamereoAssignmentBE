@@ -19,9 +19,9 @@ public class KamereoAssignment {
     StaffManagement management = new StaffManagement(scanner, numberOfStaff);
     management.readInputData();
 
-    // TODO: processing data
-
     System.out.println("Output:");
-
+    management.buildStaffInfos();
+    management.printStaffPermissions();
+    management.processCommands();
   }
 }
