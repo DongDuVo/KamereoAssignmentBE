@@ -21,11 +21,12 @@ public class RemovePermissionCommand implements PermissionCommand {
     while (managerId != null) {
       String mId = managerId;
       long numberOfStaff = staffInfos.values().stream().filter(s -> !s.getId().equals(staffId)
-          && s.getManager().equals(mId)
+          && mId.equals(s.getManager())
           && s.hasPermission(permission)
       ).count();
       if (numberOfStaff > 0) return;
       manager = staffInfos.get(managerId);
+      if (manager == null) return;
       manager.removePermission(permission);
       managerId = manager.getManager();
     }

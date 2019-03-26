@@ -19,6 +19,7 @@ public class AddPermissionCommand implements PermissionCommand {
     StaffInfo manager;
     while (managerId != null) {
       manager = staffInfos.get(managerId);
+      if (manager == null) return;
       manager.addPermission(permissions);
       managerId = manager.getManager();
     }
