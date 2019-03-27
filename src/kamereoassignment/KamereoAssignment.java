@@ -14,13 +14,11 @@ public class KamereoAssignment {
   public static void main(String[] args) {
     System.out.println("Please enter your input data:");
     Scanner scanner = new Scanner(System.in);
-    int numberOfStaff = Integer.parseInt(scanner.nextLine());
 
-    StaffManagement management = new StaffManagement(scanner, numberOfStaff);
-    management.readInputData();
+    StaffManagement management = new StaffManagement(scanner);
+    management.processInputData();
 
     System.out.println("Output:");
-    management.buildStaffInfos();
     management.printStaffPermissions();
     management.processCommands();
   }

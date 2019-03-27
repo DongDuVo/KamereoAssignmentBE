@@ -20,42 +20,45 @@ import kamereoassignment.commands.RemovePermissionCommand;
 public class StaffManagement {
 
   private static final String TOKEN = "\\s";
-  private final List<String[]> permissionsOfStaffs = new LinkedList<>();
-  private final List<String> managerOfStaffs = new LinkedList<>();
-  private final List<String[]> commands = new LinkedList<>();
+  private List<String[]> commands = new LinkedList<>();
   private final Scanner scanner;
-  private final int numberOfStaff;
+  private int numberOfStaff;
   private final Map<String, StaffInfo> staffInfos = new LinkedHashMap<>();
   private final Map<String, PermissionCommand> commandExecutors = new HashMap<>();
 
-  public StaffManagement(Scanner scanner, int numberOfStaff) {
+  public StaffManagement(Scanner scanner) {
     this.scanner = scanner;
-    this.numberOfStaff = numberOfStaff;
-    commandExecutors.put(COMMANDS.ADD.name(), new AddPermissionCommand());
-    commandExecutors.put(COMMANDS.QUERY.name(), new QueryPermissionCommand());
-    commandExecutors.put(COMMANDS.REMOVE.name(), new RemovePermissionCommand());
+    commandExecutors.put(COMMANDS.ADD.name(), new AddPermissionCommand(staffInfos));
+    commandExecutors.put(COMMANDS.QUERY.name(), new QueryPermissionCommand(staffInfos));
+    commandExecutors.put(COMMANDS.REMOVE.name(), new RemovePermissionCommand(staffInfos));
   }
 
-  public void readInputData() {
-    readPermissionsOfStaffs();
-    readMangerOfStaffs();
-    readCommands();
+  public void processInputData() {
+    numberOfStaff = Integer.parseInt(scanner.nextLine());
+    
+    List<String[]> permissionsOfStaffs = readPermissionsOfStaffs();
+    List<String> mangerOfStaffs = readMangerOfStaffs();
+    commands = readCommands();
+    buildStaffInfos(permissionsOfStaffs, mangerOfStaffs);
   }
 
-  public void buildStaffInfos() {
+  protected void buildStaffInfos(List<String[]> permissionsOfStaffs, List<String> managerOfStaffs) {
     PermissionCommand addCommand = commandExecutors.get(COMMANDS.ADD.name());
     StaffInfo ceo = new StaffInfo("CEO", null);
     ceo.addPermission(permissionsOfStaffs.get(0));
     staffInfos.put("CEO", ceo);
-    addCommand.execute(staffInfos, "CEO", permissionsOfStaffs.get(0));
+    addCommand.execute("CEO", permissionsOfStaffs.get(0));
 
     for (int i = 1; i <= numberOfStaff; i++) {
       String managerId = managerOfStaffs.get(i - 1);
       String id = String.valueOf(i);
       StaffInfo staff = new StaffInfo(id, managerId);
       staffInfos.put(id, staff);
+      
+      StaffInfo manager = staffInfos.get(managerId);
+      manager.addManagingStaff(id);
 
-      addCommand.execute(staffInfos, id, permissionsOfStaffs.get(i));
+      addCommand.execute(id, permissionsOfStaffs.get(i));
     }
   }
   
@@ -70,32 +73,38 @@ public class StaffManagement {
       String staffId = command[1];
       String[] permissions = Arrays.copyOfRange(command, 2, command.length);
       commandExecutor = commandExecutors.get(operator);
-      commandExecutor.execute(staffInfos, staffId, permissions);
+      commandExecutor.execute(staffId, permissions);
     }
   }
 
-  protected void readPermissionsOfStaffs() {
+  protected List<String[]> readPermissionsOfStaffs() {
+    List<String[]> permissionsOfStaffs = new LinkedList<>();
     for (int i = 0; i <= numberOfStaff; i++) {
       String[] permisstions = scanner.nextLine().split(TOKEN);
       permissionsOfStaffs.add(permisstions);
     }
+    return permissionsOfStaffs;
   }
 
-  protected void readMangerOfStaffs() {
+  protected List<String> readMangerOfStaffs() {
+    List<String> managerOfStaffs = new LinkedList<>();
     for (int i = 0; i < numberOfStaff; i++) {
       String manager = scanner.nextLine();
       managerOfStaffs.add(manager);
     }
+    return managerOfStaffs;
   }
 
-  protected void readCommands() {
+  protected List<String[]> readCommands() {
+    List<String[]> extraCommands = new LinkedList<>();
     while (scanner.hasNextLine()) {
       String[] command = scanner.nextLine().split(TOKEN);
       if (commandExecutors.get(command[0]) != null) {
-        commands.add(command);
+        extraCommands.add(command);
       } else {
         break;
       }
     }
+    return extraCommands;
   }
 }

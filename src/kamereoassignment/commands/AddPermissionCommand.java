@@ -8,9 +8,15 @@ import kamereoassignment.StaffInfo;
  * @author vodongdu
  */
 public class AddPermissionCommand implements PermissionCommand {
+  
+  private final Map<String, StaffInfo> staffInfos;
+  
+  public AddPermissionCommand(Map<String, StaffInfo> staffInfos) {
+    this.staffInfos = staffInfos;
+  }
 
   @Override
-  public void execute(Map<String, StaffInfo> staffInfos, String staffId, String ...permissions) {
+  public void execute(String staffId, String ...permissions) {
     StaffInfo staff = staffInfos.get(staffId);
     if (staff == null) return;
     staff.addPermission(permissions);
@@ -19,7 +25,7 @@ public class AddPermissionCommand implements PermissionCommand {
     StaffInfo manager;
     while (managerId != null) {
       manager = staffInfos.get(managerId);
-      if (manager == null) return;
+      if (manager == null) break;
       manager.addPermission(permissions);
       managerId = manager.getManager();
     }

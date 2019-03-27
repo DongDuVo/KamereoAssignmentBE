@@ -1,6 +1,7 @@
 package kamereoassignment.commands;
 
 import java.util.Map;
+import java.util.Set;
 import kamereoassignment.StaffInfo;
 
 /**
@@ -8,28 +9,44 @@ import kamereoassignment.StaffInfo;
  * @author vodongdu
  */
 public class RemovePermissionCommand implements PermissionCommand {
+  
+  private final Map<String, StaffInfo> staffInfos;
+  
+  public RemovePermissionCommand(Map<String, StaffInfo> staffInfos) {
+    this.staffInfos = staffInfos;
+  }
 
   @Override
-  public void execute(Map<String, StaffInfo> staffInfos, String staffId, String ...permissions) {
+  public void execute(String staffId, String ...permissions) {
     StaffInfo staff = staffInfos.get(staffId);
     if (staff == null) return;
     String permission = permissions[0];
     staff.removePermission(permission);
 
-    String managerId = staff.getManager();
-    StaffInfo manager;
-    while (managerId != null) {
-      String mId = managerId;
-      long numberOfStaff = staffInfos.values().stream().filter(s -> !s.getId().equals(staffId)
-          && mId.equals(s.getManager())
-          && s.hasPermission(permission)
-      ).count();
-      if (numberOfStaff > 0) return;
-      manager = staffInfos.get(managerId);
-      if (manager == null) return;
-      manager.removePermission(permission);
-      managerId = manager.getManager();
-    }
+    removePermissionForManager(staff, permission);
+    removePermissionForManagingStaffs(staff.getManagingStaffs(), permission);
   }
 
+  private void removePermissionForManagingStaffs(Set<String> staffIds, String permission) {
+    if (staffIds == null || staffIds.isEmpty()) return;
+    staffIds.forEach(staffId -> {
+      StaffInfo staff = staffInfos.get(staffId);
+      if (staff != null && staff.hasPermission(permission)) {
+        staff.removePermission(permission);
+        removePermissionForManagingStaffs(staff.getManagingStaffs(), permission);
+      }
+    });
+  }
+  
+  private void removePermissionForManager(StaffInfo staff, String permission) {
+    String managerId = staff.getManager();
+    if (managerId == null) return;
+    StaffInfo manager = staffInfos.get(managerId);
+    if (manager == null) return;
+    boolean cannotRemove = manager.getManagingStaffs().stream().anyMatch(staffId -> !staffId.equals(staff.getId())
+        && staffInfos.get(staffId).hasPermission(permission));
+    if (cannotRemove) return;
+    manager.removePermission(permission);
+    removePermissionForManager(manager, permission);
+  }
 }

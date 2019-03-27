@@ -13,12 +13,21 @@ public class StaffInfo {
 
   private final String id;
   private final Set<String> permissions = new HashSet<>();
+  private final Set<String> managingStaffs = new HashSet<>();
   private final String manager;
   private static final String DELIMETER = ", ";
 
   public StaffInfo(String id, String manager) {
     this.id = id;
     this.manager = manager;
+  }
+  
+  public Set<String> getManagingStaffs() {
+    return managingStaffs;
+  }
+  
+  public void addManagingStaff(String staffId) {
+    managingStaffs.add(staffId);
   }
 
   public String getManager() {
@@ -45,5 +54,9 @@ public class StaffInfo {
   
   public boolean hasPermission(String permission) {
     return permissions.contains(permission);
+  }
+  
+  public boolean hasPermissions(String ...permissions) {
+    return this.permissions.containsAll(Arrays.asList(permissions));
   }
 }
