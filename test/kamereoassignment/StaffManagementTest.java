@@ -14,9 +14,6 @@ import org.junit.Test;
  * @author duvo
  */
 public class StaffManagementTest {
-  
-  public StaffManagementTest() {
-  }
 
   @Test
   public void testProcessInputData() throws FileNotFoundException {
