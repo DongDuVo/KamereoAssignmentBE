@@ -56,7 +56,33 @@ public class StaffManagementTest {
     Assert.assertEquals("2", staffInfos.get("6").getManager());
     Assert.assertEquals("A, B", staffInfos.get("6").getPermissions());
     Assert.assertTrue(staffInfos.get("6").getManagingStaffs().isEmpty());
+  }
+  
+  @Test
+  public void testReadPermissionsOfStaffs() {
+    String input = "A F\nA B\nA C E\nA\nD\nA C\nA B";
+    Scanner scanner = new Scanner(input);
+    StaffManagement instance = new StaffManagement(scanner);
+    List<String[]> permissionsOfStaffs = instance.readPermissionsOfStaffs(6);
     
+    Assert.assertEquals(7, permissionsOfStaffs.size());
+    Assert.assertArrayEquals(new String[]{"A", "F"}, permissionsOfStaffs.get(0));
+    Assert.assertArrayEquals(new String[]{"A", "B"}, permissionsOfStaffs.get(1));
+    Assert.assertArrayEquals(new String[]{"A", "C", "E"}, permissionsOfStaffs.get(2));
+    Assert.assertArrayEquals(new String[]{"A"}, permissionsOfStaffs.get(3));
+    Assert.assertArrayEquals(new String[]{"D"}, permissionsOfStaffs.get(4));
+    Assert.assertArrayEquals(new String[]{"A", "C"}, permissionsOfStaffs.get(5));
+    Assert.assertArrayEquals(new String[]{"A", "B"}, permissionsOfStaffs.get(6));
+  }
+  
+  @Test
+  public void testReadCommands() {
+    String input = "ADD 2 X\nQUERY 2\nQUERY CEO\nREMOVE 2 X\nQUERY 2\nQUERY CEO";
+    Scanner scanner = new Scanner(input);
+    StaffManagement instance = new StaffManagement(scanner);
+    List<String[]> commands = instance.readCommands();
+    
+    Assert.assertEquals(6, commands.size());
     Assert.assertArrayEquals(new String[]{"ADD", "2", "X"}, commands.get(0));
     Assert.assertArrayEquals(new String[]{"QUERY", "2"}, commands.get(1));
     Assert.assertArrayEquals(new String[]{"QUERY", "CEO"}, commands.get(2));
@@ -65,4 +91,14 @@ public class StaffManagementTest {
     Assert.assertArrayEquals(new String[]{"QUERY", "CEO"}, commands.get(5));
   }
   
+  @Test
+  public void testReadMangerOfStaffs() {
+    String input = "CEO\nCEO\n1\n2\n1";
+    Scanner scanner = new Scanner(input);
+    StaffManagement instance = new StaffManagement(scanner);
+    List<String> mangerOfStaffs = instance.readMangerOfStaffs(5);
+    
+    Assert.assertEquals(5, mangerOfStaffs.size());
+    Assert.assertArrayEquals(new String[]{"CEO", "CEO", "1", "2", "1"}, mangerOfStaffs.toArray());
+  }
 }

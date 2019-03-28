@@ -22,7 +22,6 @@ public class StaffManagement {
   private static final String TOKEN = "\\s";
   private List<String[]> commands = new LinkedList<>();
   private final Scanner scanner;
-  private int numberOfStaff;
   private final Map<String, StaffInfo> staffInfos = new LinkedHashMap<>();
   private final Map<String, PermissionCommand> commandExecutors = new HashMap<>();
 
@@ -42,10 +41,10 @@ public class StaffManagement {
   }
 
   public void processInputData() {
-    numberOfStaff = Integer.parseInt(scanner.nextLine());
+    int numberOfStaff = Integer.parseInt(scanner.nextLine());
     
-    List<String[]> permissionsOfStaffs = readPermissionsOfStaffs();
-    List<String> mangerOfStaffs = readMangerOfStaffs();
+    List<String[]> permissionsOfStaffs = readPermissionsOfStaffs(numberOfStaff);
+    List<String> mangerOfStaffs = readMangerOfStaffs(numberOfStaff);
     commands = readCommands();
     buildStaffInfos(permissionsOfStaffs, mangerOfStaffs);
   }
@@ -57,7 +56,7 @@ public class StaffManagement {
     staffInfos.put("CEO", ceo);
     addCommand.execute("CEO", permissionsOfStaffs.get(0));
 
-    for (int i = 1; i <= numberOfStaff; i++) {
+    for (int i = 1; i < permissionsOfStaffs.size(); i++) {
       String managerId = managerOfStaffs.get(i - 1);
       String id = String.valueOf(i);
       StaffInfo staff = new StaffInfo(id, managerId);
@@ -85,7 +84,7 @@ public class StaffManagement {
     }
   }
 
-  protected List<String[]> readPermissionsOfStaffs() {
+  protected List<String[]> readPermissionsOfStaffs(int numberOfStaff) {
     List<String[]> permissionsOfStaffs = new LinkedList<>();
     for (int i = 0; i <= numberOfStaff; i++) {
       String[] permisstions = scanner.nextLine().split(TOKEN);
@@ -94,7 +93,7 @@ public class StaffManagement {
     return permissionsOfStaffs;
   }
 
-  protected List<String> readMangerOfStaffs() {
+  protected List<String> readMangerOfStaffs(int numberOfStaff) {
     List<String> managerOfStaffs = new LinkedList<>();
     for (int i = 0; i < numberOfStaff; i++) {
       String manager = scanner.nextLine();
