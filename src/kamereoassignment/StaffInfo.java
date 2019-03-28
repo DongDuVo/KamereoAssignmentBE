@@ -26,8 +26,8 @@ public class StaffInfo {
     return managingStaffs;
   }
   
-  public void addManagingStaff(String staffId) {
-    managingStaffs.add(staffId);
+  public void addManagingStaffs(String ...staffIds) {
+    Collections.addAll(managingStaffs, staffIds);
   }
 
   public String getManager() {

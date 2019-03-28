@@ -32,6 +32,14 @@ public class StaffManagement {
     commandExecutors.put(COMMANDS.QUERY.name(), new QueryPermissionCommand(staffInfos));
     commandExecutors.put(COMMANDS.REMOVE.name(), new RemovePermissionCommand(staffInfos));
   }
+  
+  public List<String[]> getCommands() {
+    return commands;
+  }
+
+  public Map<String, StaffInfo> getStaffInfos() {
+    return staffInfos;
+  }
 
   public void processInputData() {
     numberOfStaff = Integer.parseInt(scanner.nextLine());
@@ -56,7 +64,7 @@ public class StaffManagement {
       staffInfos.put(id, staff);
       
       StaffInfo manager = staffInfos.get(managerId);
-      manager.addManagingStaff(id);
+      manager.addManagingStaffs(id);
 
       addCommand.execute(id, permissionsOfStaffs.get(i));
     }
